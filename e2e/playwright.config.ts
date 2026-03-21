@@ -7,6 +7,11 @@ export default defineConfig({
   testMatch: "*.spec.ts",
   timeout: 30_000,
   retries: 1,
+  outputDir: "../test-results",
+  reporter: [
+    ["list"],
+    ["html", { open: "never", outputFolder: "../playwright-report" }],
+  ],
   use: {
     baseURL: `http://127.0.0.1:${E2E_PORT}`,
     headless: true,

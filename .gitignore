@@ -22,6 +22,8 @@ src-tauri/target/
 
 # Test coverage
 coverage/
+playwright-report/
+test-results/
 
 # Environment files
 .env
