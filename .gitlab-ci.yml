@@ -1,0 +1,49 @@
+image: mcr.microsoft.com/playwright:v1.41.1-jammy
+
+stages:
+  - verify
+  - e2e
+
+variables:
+  NPM_CONFIG_LOGLEVEL: warn
+
+cache:
+  paths:
+    - node_modules/
+    - .npm/
+
+before_script:
+  - npm ci
+
+verify_full:
+  stage: verify
+  script:
+    - npm run verify:full
+  rules:
+    # run on merge requests and default branch
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+# end-to-end tests using Playwright
+# uses Playwright container which includes all dependencies
+# update version as needed
+
+# note: this job will install browsers and run e2e tests
+
+e2e_tests:
+  stage: e2e
+  script:
+    - npx playwright install --with-deps
+    - npm run test:e2e
+  artifacts:
+    when: always
+    paths:
+      - e2e-output/
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+# Include GitLab security scanning templates for secret detection and dependency scanning
+include:
+  - template: Security/Secret-Detection.gitlab-ci.yml
+  - template: Dependency-Scanning.gitlab-ci.yml
