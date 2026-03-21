@@ -4,6 +4,12 @@ workflow:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
     - when: never
 
+include:
+  # Secret detection is part of the default GitLab baseline for this repo class.
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
+  # Dependency scanning is Ultimate-tier on GitLab and may not materialize on every project.
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+
 stages:
   - verify
   - test
@@ -53,9 +59,9 @@ e2e_tests:
     paths:
       - playwright-report/
       - test-results/
-    expire_in: 7 days
+    expire_in: 30 days
   rules: *mr_or_default_rules
 
-include:
-  # GitLab security jobs expect a test stage by default.
-  - template: Jobs/Secret-Detection.gitlab-ci.yml
+secret_detection:
+  # Keep the scanner mandatory in CI; findings still surface through GitLab security reports.
+  allow_failure: false
