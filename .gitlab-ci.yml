@@ -12,6 +12,7 @@ include:
 
 stages:
   - verify
+  # GitLab security templates default to `test`, so keep it even if custom jobs use other stages.
   - test
   - e2e
 
@@ -47,6 +48,7 @@ verify_full:
   rules: *mr_or_default_rules
 
 e2e_tests:
+  # Optional for lighter repo classes; keep it when browser-level user flows are worth guarding.
   stage: e2e
   image: mcr.microsoft.com/playwright:v1.58.2-noble
   cache: *npm_cache
