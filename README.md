@@ -166,8 +166,12 @@ What each command means:
 
 CI mapping:
 
-- `.github/workflows/ci.yml` runs `npm run verify:full`.
-- `.github/workflows/e2e.yml` runs `npm run test:e2e` on pull requests.
+- `.gitlab-ci.yml` is the active baseline for this repo:
+  - `verify_full` runs `npm run verify:full`
+  - `secret_detection` runs GitLab secret scanning on merge requests and `master`
+  - `e2e_tests` runs `npm run test:e2e`
+- GitHub workflows are retained as legacy repo automation, but GitLab CI is the canonical merge gate.
+- GitLab dependency scanning is not part of the default baseline here because it did not materialize as a runnable job on this project; treat it as an opt-in add-on only after confirming the project plan/features actually enable it.
 - Performance checks stay in the dedicated perf workflows rather than the main correctness gate.
 
 Granular commands:
