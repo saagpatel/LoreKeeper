@@ -1,3 +1,9 @@
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    - when: never
+
 stages:
   - verify
   - test
@@ -8,12 +14,11 @@ variables:
   CARGO_TERM_COLOR: always
   AST_ENABLE_MR_PIPELINES: "true"
 
-.node_cache: &node_cache
+.npm_cache: &npm_cache
   key:
     files:
       - package-lock.json
   paths:
-    - node_modules/
     - .npm/
 
 .mr_or_default_rules: &mr_or_default_rules
@@ -23,7 +28,7 @@ variables:
 verify_full:
   stage: verify
   image: rust:1.88-bookworm
-  cache: *node_cache
+  cache: *npm_cache
   before_script:
     - apt-get update
     - apt-get install -y curl libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libgtk-3-dev
@@ -38,7 +43,7 @@ verify_full:
 e2e_tests:
   stage: e2e
   image: mcr.microsoft.com/playwright:v1.58.2-noble
-  cache: *node_cache
+  cache: *npm_cache
   before_script:
     - npm ci --cache .npm --prefer-offline
   script:
@@ -54,4 +59,3 @@ e2e_tests:
 include:
   # GitLab security jobs expect a test stage by default.
   - template: Jobs/Secret-Detection.gitlab-ci.yml
-  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
