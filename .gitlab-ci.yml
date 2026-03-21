@@ -1,49 +1,58 @@
-image: mcr.microsoft.com/playwright:v1.41.1-jammy
-
 stages:
   - verify
+  - test
   - e2e
 
 variables:
   NPM_CONFIG_LOGLEVEL: warn
+  CARGO_TERM_COLOR: always
+  AST_ENABLE_MR_PIPELINES: "true"
 
-cache:
+.node_cache: &node_cache
+  key:
+    files:
+      - package-lock.json
   paths:
     - node_modules/
     - .npm/
 
-before_script:
-  - npm ci
+.mr_or_default_rules: &mr_or_default_rules
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
 
 verify_full:
   stage: verify
+  image: rust:1.86-bookworm
+  cache: *node_cache
+  before_script:
+    - apt-get update
+    - apt-get install -y curl libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libgtk-3-dev
+    - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+    - apt-get install -y nodejs
+    - npm ci --cache .npm --prefer-offline
+    - rustup component add clippy
   script:
     - npm run verify:full
-  rules:
-    # run on merge requests and default branch
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
-
-# end-to-end tests using Playwright
-# uses Playwright container which includes all dependencies
-# update version as needed
-
-# note: this job will install browsers and run e2e tests
+  rules: *mr_or_default_rules
 
 e2e_tests:
   stage: e2e
+  image: mcr.microsoft.com/playwright:v1.41.1-jammy
+  cache: *node_cache
+  before_script:
+    - npm ci --cache .npm --prefer-offline
   script:
-    - npx playwright install --with-deps
+    - npx playwright install --with-deps chromium
     - npm run test:e2e
   artifacts:
     when: always
     paths:
-      - e2e-output/
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      - playwright-report/
+      - test-results/
+    expire_in: 7 days
+  rules: *mr_or_default_rules
 
-# Include GitLab security scanning templates for secret detection and dependency scanning
 include:
-  - template: Security/Secret-Detection.gitlab-ci.yml
-  - template: Dependency-Scanning.gitlab-ci.yml
+  # GitLab security jobs expect a test stage by default.
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
