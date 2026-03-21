@@ -176,11 +176,11 @@ pub async fn process_command(
                     .clone()
                     .unwrap_or_else(|| "quicksave".to_string());
                 let db_state = app.state::<crate::persistence::state::DbState>();
-                let db = db_state.0.lock().map_err(|e| format!("{}", e))?;
+                let db = db_state.0.lock().map_err(|e| format!("{e}"))?;
                 crate::persistence::save_load::save_game(&db, &slot, &state)?;
                 return Ok(CommandResponse {
                     messages: vec![OutputLine {
-                        text: format!("Game saved to '{}'.", slot),
+                        text: format!("Game saved to '{slot}'."),
                         line_type: LineType::System,
                     }],
                     world_state: state.clone(),
@@ -192,12 +192,12 @@ pub async fn process_command(
                     .clone()
                     .unwrap_or_else(|| "quicksave".to_string());
                 let db_state = app.state::<crate::persistence::state::DbState>();
-                let db = db_state.0.lock().map_err(|e| format!("{}", e))?;
+                let db = db_state.0.lock().map_err(|e| format!("{e}"))?;
                 let loaded = crate::persistence::save_load::load_game(&db, &slot)?;
                 *state = loaded;
                 let loc = state.locations.get(&state.player.location).cloned();
                 let mut msgs = vec![OutputLine {
-                    text: format!("Game loaded from '{}'.", slot),
+                    text: format!("Game loaded from '{slot}'."),
                     line_type: LineType::System,
                 }];
                 if let Some(location) = loc {
@@ -241,7 +241,7 @@ pub async fn process_command(
         // Append contextual hint for new players
         if let Some(hint_text) = hints::get_contextual_hint(&state) {
             messages.push(OutputLine {
-                text: format!("[Hint] {}", hint_text),
+                text: format!("[Hint] {hint_text}"),
                 line_type: LineType::System,
             });
         }
@@ -306,7 +306,7 @@ pub async fn process_command(
             if let Some(db) = app.try_state::<DbState>() {
                 if let Ok(conn) = db.0.lock() {
                     let ending = match &state.game_mode {
-                        GameMode::GameOver(e) => Some(format!("{:?}", e)),
+                        GameMode::GameOver(e) => Some(format!("{e:?}")),
                         _ => None,
                     };
                     let quests_done =

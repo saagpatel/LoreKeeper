@@ -8,7 +8,7 @@ pub fn unlock_achievement(conn: &Connection, id: &str) -> Result<(), String> {
         "INSERT OR IGNORE INTO achievements (id, unlocked_at) VALUES (?1, ?2)",
         params![id, now],
     )
-    .map_err(|e| format!("Achievement unlock error: {}", e))?;
+    .map_err(|e| format!("Achievement unlock error: {e}"))?;
     Ok(())
 }
 
@@ -28,15 +28,15 @@ pub fn get_unlocked_achievements(conn: &Connection) -> Result<Vec<AchievementInf
 
     let mut stmt = conn
         .prepare("SELECT id, unlocked_at FROM achievements")
-        .map_err(|e| format!("Achievement query error: {}", e))?;
+        .map_err(|e| format!("Achievement query error: {e}"))?;
 
     let unlocked: std::collections::HashMap<String, String> = stmt
         .query_map([], |row| {
             Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?))
         })
-        .map_err(|e| format!("Achievement query error: {}", e))?
+        .map_err(|e| format!("Achievement query error: {e}"))?
         .collect::<Result<std::collections::HashMap<_, _>, _>>()
-        .map_err(|e| format!("Achievement row error: {}", e))?;
+        .map_err(|e| format!("Achievement row error: {e}"))?;
 
     for Achievement { id, name, description, icon } in all {
         let (is_unlocked, unlocked_at) = match unlocked.get(&id) {

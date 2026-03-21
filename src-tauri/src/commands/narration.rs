@@ -20,7 +20,7 @@ pub fn rate_narration(
         "INSERT INTO narration_ratings (prompt_hash, rating, model, created_at) VALUES (?1, ?2, ?3, ?4)",
         rusqlite::params![prompt_hash, rating, model, now],
     )
-    .map_err(|e| format!("Failed to save rating: {}", e))?;
+    .map_err(|e| format!("Failed to save rating: {e}"))?;
     Ok(())
 }
 

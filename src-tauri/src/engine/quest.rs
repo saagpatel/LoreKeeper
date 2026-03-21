@@ -52,8 +52,7 @@ pub fn check_quest_progress(state: &mut WorldState) -> Vec<OutputLine> {
                     .unwrap_or(&quest.giver);
                 messages.push(OutputLine {
                     text: format!(
-                        "Quest objective complete! {} wants to speak with you.",
-                        giver_name
+                        "Quest objective complete! {giver_name} wants to speak with you."
                     ),
                     line_type: LineType::System,
                 });

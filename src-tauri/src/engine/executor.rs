@@ -125,7 +125,7 @@ pub fn execute(command: GameCommand, state: &mut WorldState) -> ActionResult {
             let text = if msg.is_empty() {
                 "What would you like to do?".to_string()
             } else {
-                format!("I don't understand '{}'.", msg)
+                format!("I don't understand '{msg}'.")
             };
             ActionResult {
                 messages: vec![OutputLine {
@@ -198,7 +198,7 @@ fn execute_look(target: Option<String>, state: &mut WorldState) -> ActionResult 
                 if let Some(item) = state.items.get(id).cloned() {
                     let lines = templates::describe_examine_item(&item);
                     if item.lore.is_some() {
-                        add_journal_entry(state, &format!("item_{}", id), JournalCategory::Item, &item.name, item.lore.as_deref().unwrap_or(&item.description));
+                        add_journal_entry(state, &format!("item_{id}"), JournalCategory::Item, &item.name, item.lore.as_deref().unwrap_or(&item.description));
                     }
                     return ActionResult {
                         messages: lines.into_iter().map(|text| OutputLine { text, line_type: LineType::Narration }).collect(),
@@ -214,7 +214,7 @@ fn execute_look(target: Option<String>, state: &mut WorldState) -> ActionResult 
                 if let Some(item) = state.items.get(id).cloned() {
                     let lines = templates::describe_examine_item(&item);
                     if item.lore.is_some() {
-                        add_journal_entry(state, &format!("item_{}", id), JournalCategory::Item, &item.name, item.lore.as_deref().unwrap_or(&item.description));
+                        add_journal_entry(state, &format!("item_{id}"), JournalCategory::Item, &item.name, item.lore.as_deref().unwrap_or(&item.description));
                     }
                     return ActionResult {
                         messages: lines.into_iter().map(|text| OutputLine { text, line_type: LineType::Narration }).collect(),
@@ -243,7 +243,7 @@ fn execute_look(target: Option<String>, state: &mut WorldState) -> ActionResult 
                     line_type: LineType::Error,
                 }],
                 action_type: ActionType::Error {
-                    message: format!("Not found: {}", target),
+                    message: format!("Not found: {target}"),
                 },
                 narrative_context: None,
                 sound_cues: vec![],
@@ -296,7 +296,7 @@ fn finalize_move(dest_id: &str, first_visit: bool, messages: &mut Vec<OutputLine
             .map(|n| n.name.clone())
             .unwrap_or_default();
         messages.push(OutputLine {
-            text: format!("{} attacks you!", npc_name),
+            text: format!("{npc_name} attacks you!"),
             line_type: LineType::Combat,
         });
     }
@@ -337,7 +337,7 @@ fn execute_go(direction: Direction, state: &mut WorldState) -> ActionResult {
                     line_type: LineType::Error,
                 }],
                 action_type: ActionType::Error {
-                    message: format!("Can't go {}", direction),
+                    message: format!("Can't go {direction}"),
                 },
                 narrative_context: None,
                 sound_cues: vec![],
@@ -377,7 +377,7 @@ fn execute_go(direction: Direction, state: &mut WorldState) -> ActionResult {
                     line_type: LineType::Error,
                 }],
                 action_type: ActionType::Error {
-                    message: format!("Locked: {}", direction),
+                    message: format!("Locked: {direction}"),
                 },
                 narrative_context: None,
                 sound_cues: vec![],
@@ -400,7 +400,7 @@ fn execute_go(direction: Direction, state: &mut WorldState) -> ActionResult {
         if let Some(dest) = state.locations.get(&dest_id) {
             let dest_name = dest.name.clone();
             let dest_desc = dest.description.clone();
-            add_journal_entry(state, &format!("loc_{}", dest_id), JournalCategory::Location, &dest_name, &dest_desc);
+            add_journal_entry(state, &format!("loc_{dest_id}"), JournalCategory::Location, &dest_name, &dest_desc);
         }
     }
 
@@ -468,7 +468,7 @@ fn execute_take(target: &str, state: &mut WorldState) -> ActionResult {
                 line_type: LineType::Error,
             }],
             action_type: ActionType::Error {
-                message: format!("Not found: {}", target),
+                message: format!("Not found: {target}"),
             },
             narrative_context: None,
                 sound_cues: vec![],
@@ -543,11 +543,11 @@ fn execute_drop(target: &str, state: &mut WorldState) -> ActionResult {
     if matches.is_empty() {
         return ActionResult {
             messages: vec![OutputLine {
-                text: format!("You don't have '{}'.", target),
+                text: format!("You don't have '{target}'."),
                 line_type: LineType::Error,
             }],
             action_type: ActionType::Error {
-                message: format!("Not in inventory: {}", target),
+                message: format!("Not in inventory: {target}"),
             },
             narrative_context: None,
                 sound_cues: vec![],
@@ -589,11 +589,11 @@ fn execute_use(target: &str, state: &mut WorldState) -> ActionResult {
     if matches.is_empty() {
         return ActionResult {
             messages: vec![OutputLine {
-                text: format!("You don't have '{}'.", target),
+                text: format!("You don't have '{target}'."),
                 line_type: LineType::Error,
             }],
             action_type: ActionType::Error {
-                message: format!("Not in inventory: {}", target),
+                message: format!("Not in inventory: {target}"),
             },
             narrative_context: None,
                 sound_cues: vec![],
@@ -718,11 +718,11 @@ fn execute_equip(target: &str, state: &mut WorldState) -> ActionResult {
     if matches.is_empty() {
         return ActionResult {
             messages: vec![OutputLine {
-                text: format!("You don't have '{}'.", target),
+                text: format!("You don't have '{target}'."),
                 line_type: LineType::Error,
             }],
             action_type: ActionType::Error {
-                message: format!("Not in inventory: {}", target),
+                message: format!("Not in inventory: {target}"),
             },
             narrative_context: None,
                 sound_cues: vec![],
@@ -850,11 +850,11 @@ fn execute_unequip(target: &str, state: &mut WorldState) -> ActionResult {
 
     ActionResult {
         messages: vec![OutputLine {
-            text: format!("You don't have '{}' equipped.", target),
+            text: format!("You don't have '{target}' equipped."),
             line_type: LineType::Error,
         }],
         action_type: ActionType::Error {
-            message: format!("Not equipped: {}", target),
+            message: format!("Not equipped: {target}"),
         },
         narrative_context: None,
                 sound_cues: vec![],
@@ -888,7 +888,7 @@ fn execute_talk(target: &str, state: &mut WorldState) -> ActionResult {
                 line_type: LineType::Error,
             }],
             action_type: ActionType::Error {
-                message: format!("NPC not found: {}", target),
+                message: format!("NPC not found: {target}"),
             },
             narrative_context: None,
                 sound_cues: vec![],
@@ -998,7 +998,7 @@ fn execute_attack(target: &str, state: &mut WorldState) -> ActionResult {
             }
 
             // Add bestiary journal entry
-            add_journal_entry(state, &format!("npc_{}", npc_id), JournalCategory::Bestiary, &npc.name, &npc.description);
+            add_journal_entry(state, &format!("npc_{npc_id}"), JournalCategory::Bestiary, &npc.name, &npc.description);
 
             let mut messages = vec![OutputLine {
                 text: format!("You engage {} in combat!", npc.name),
@@ -1038,7 +1038,7 @@ fn execute_attack(target: &str, state: &mut WorldState) -> ActionResult {
                 line_type: LineType::Error,
             }],
             action_type: ActionType::Error {
-                message: format!("Target not found: {}", target),
+                message: format!("Target not found: {target}"),
             },
             narrative_context: None,
                 sound_cues: vec![],
@@ -1193,7 +1193,7 @@ fn execute_journal(state: &mut WorldState) -> ActionResult {
         for (cat, label) in &categories {
             let entries: Vec<&JournalEntry> = state.journal.iter().filter(|e| &e.category == cat).collect();
             if !entries.is_empty() {
-                lines.push(format!("\n{}:", label));
+                lines.push(format!("\n{label}:"));
                 for entry in entries {
                     lines.push(format!("  - {}: {}", entry.title, entry.content));
                 }
@@ -1257,7 +1257,7 @@ fn execute_secret(word: &str, state: &mut WorldState) -> ActionResult {
                         line_type: LineType::System,
                     },
                     OutputLine {
-                        text: format!("You find yourself in {}.", dest_name),
+                        text: format!("You find yourself in {dest_name}."),
                         line_type: LineType::Narration,
                     },
                 ],
@@ -1317,7 +1317,7 @@ fn execute_secret(word: &str, state: &mut WorldState) -> ActionResult {
             state.player.health = (state.player.health + heal).min(state.player.max_health);
             ActionResult {
                 messages: vec![OutputLine {
-                    text: format!("A tingle of magic courses through you. (+{} HP)", heal),
+                    text: format!("A tingle of magic courses through you. (+{heal} HP)"),
                     line_type: LineType::System,
                 }],
                 action_type: ActionType::DisplayOnly,
@@ -1550,7 +1550,7 @@ mod tests {
     fn test_inventory_full() {
         let mut state = make_test_world();
         for i in 0..10 {
-            state.player.inventory.push(format!("item_{}", i));
+            state.player.inventory.push(format!("item_{i}"));
         }
         let result = execute(GameCommand::Take("sword".into()), &mut state);
         assert!(result

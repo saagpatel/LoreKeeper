@@ -27,7 +27,7 @@ pub fn list_modules(app: tauri::AppHandle) -> Result<Vec<ModuleInfo>, String> {
     let app_data_dir = app
         .path()
         .app_data_dir()
-        .map_err(|e| format!("Failed to get app data dir: {}", e))?;
+        .map_err(|e| format!("Failed to get app data dir: {e}"))?;
     let modules_dir = app_data_dir.join("modules");
 
     if !modules_dir.exists() {
@@ -36,7 +36,7 @@ pub fn list_modules(app: tauri::AppHandle) -> Result<Vec<ModuleInfo>, String> {
     }
 
     let mut modules = Vec::new();
-    let entries = std::fs::read_dir(&modules_dir).map_err(|e| format!("Read dir error: {}", e))?;
+    let entries = std::fs::read_dir(&modules_dir).map_err(|e| format!("Read dir error: {e}"))?;
 
     for entry in entries.flatten() {
         let path = entry.path();
@@ -80,20 +80,20 @@ pub fn load_module(
     let app_data_dir = app
         .path()
         .app_data_dir()
-        .map_err(|e| format!("Failed to get app data dir: {}", e))?;
+        .map_err(|e| format!("Failed to get app data dir: {e}"))?;
     let modules_dir = app_data_dir.join("modules");
     // Ensure modules_dir exists before canonicalize
     if !modules_dir.exists() {
         std::fs::create_dir_all(&modules_dir)
-            .map_err(|e| format!("Failed to create modules dir: {}", e))?;
+            .map_err(|e| format!("Failed to create modules dir: {e}"))?;
     }
     let canonical_modules_dir = modules_dir
         .canonicalize()
-        .map_err(|e| format!("Failed to resolve modules dir: {}", e))?;
+        .map_err(|e| format!("Failed to resolve modules dir: {e}"))?;
     let requested = modules_dir
         .join(&module_id)
         .canonicalize()
-        .map_err(|e| format!("Invalid module id: {}", e))?;
+        .map_err(|e| format!("Invalid module id: {e}"))?;
     if !requested.starts_with(&canonical_modules_dir) {
         return Err("Module path must be within the modules directory.".into());
     }

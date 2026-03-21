@@ -71,7 +71,7 @@ pub fn get_completions(prefix: String, game_state: State<GameState>) -> Result<V
         // Prefix the verb back
         candidates = candidates
             .into_iter()
-            .map(|c| format!("{} {}", effective_verb, c))
+            .map(|c| format!("{effective_verb} {c}"))
             .collect();
     } else {
         // Complete the command verb itself
@@ -111,7 +111,7 @@ fn direction_completions(arg: &str, state: &WorldState) -> Vec<String> {
     };
     loc.exits
         .keys()
-        .map(|d| format!("{}", d).to_lowercase())
+        .map(|d| format!("{d}").to_lowercase())
         .filter(|d| d.starts_with(arg))
         .collect()
 }

@@ -96,9 +96,8 @@ pub fn build_dialogue_messages(
         format!(" Recent memories: {}.", recent.join(", "))
     };
     let system_msg = format!(
-        "You are voicing \"{}\". Personality: {}. Disposition toward the player: {}.{} \
-         Respond in character. 1-2 sentences. Stay consistent with the personality.",
-        npc_name, personality_seed, relationship_desc, memory_str
+        "You are voicing \"{npc_name}\". Personality: {personality_seed}. Disposition toward the player: {relationship_desc}.{memory_str} \
+         Respond in character. 1-2 sentences. Stay consistent with the personality."
     );
 
     let mut messages = vec![ChatMessage {
@@ -134,19 +133,19 @@ fn describe_action_type(action_type: &ActionType) -> String {
             }
         }
         ActionType::ItemTaken { item_name } => {
-            format!("Player picked up {}.", item_name)
+            format!("Player picked up {item_name}.")
         }
         ActionType::ItemDropped { item_name } => {
-            format!("Player dropped {}.", item_name)
+            format!("Player dropped {item_name}.")
         }
         ActionType::ItemUsed { item_name, effect } => {
-            format!("Player used {}. Effect: {}", item_name, effect)
+            format!("Player used {item_name}. Effect: {effect}")
         }
         ActionType::ItemEquipped { item_name } => {
-            format!("Player equipped {}.", item_name)
+            format!("Player equipped {item_name}.")
         }
         ActionType::ItemUnequipped { item_name } => {
-            format!("Player unequipped {}.", item_name)
+            format!("Player unequipped {item_name}.")
         }
         ActionType::CombatAttack {
             damage,
@@ -155,18 +154,17 @@ fn describe_action_type(action_type: &ActionType) -> String {
             target_max_hp,
         } => {
             format!(
-                "Player attacked {} for {} damage. Target HP: {}/{}",
-                target_name, damage, target_hp, target_max_hp
+                "Player attacked {target_name} for {damage} damage. Target HP: {target_hp}/{target_max_hp}"
             )
         }
         ActionType::CombatDefend {
             damage,
             attacker_name,
         } => {
-            format!("{} attacked player for {} damage.", attacker_name, damage)
+            format!("{attacker_name} attacked player for {damage} damage.")
         }
         ActionType::CombatVictory { enemy_name } => {
-            format!("Player defeated {}.", enemy_name)
+            format!("Player defeated {enemy_name}.")
         }
         ActionType::CombatFlee { success } => {
             if *success {
@@ -180,20 +178,20 @@ fn describe_action_type(action_type: &ActionType) -> String {
             npc_name,
             dialogue_text,
         } => {
-            format!("{} said: {}", npc_name, dialogue_text)
+            format!("{npc_name} said: {dialogue_text}")
         }
         ActionType::QuestStarted { quest_name } => {
-            format!("Quest started: {}", quest_name)
+            format!("Quest started: {quest_name}")
         }
         ActionType::QuestCompleted { quest_name } => {
-            format!("Quest completed: {}", quest_name)
+            format!("Quest completed: {quest_name}")
         }
         ActionType::EventTriggered { event_description } => {
-            format!("Event: {}", event_description)
+            format!("Event: {event_description}")
         }
         ActionType::DisplayOnly => "Information displayed.".to_string(),
         ActionType::Error { message } => {
-            format!("Error: {}", message)
+            format!("Error: {message}")
         }
     }
 }
@@ -255,7 +253,7 @@ mod tests {
     fn build_dialogue_messages_caps_history_at_5() {
         let settings = GameSettings::default();
         let history: Vec<(String, String)> = (0..8)
-            .map(|i| ("user".to_string(), format!("msg {}", i)))
+            .map(|i| ("user".to_string(), format!("msg {i}")))
             .collect();
         let msgs = build_dialogue_messages(
             "Guard",

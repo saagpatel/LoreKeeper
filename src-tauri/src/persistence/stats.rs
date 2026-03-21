@@ -7,9 +7,9 @@ pub fn increment_stat(conn: &Connection, key: &str, amount: i32) -> Result<(), S
             "UPDATE game_stats SET value_int = value_int + ?2 WHERE key = ?1",
             params![key, amount],
         )
-        .map_err(|e| format!("Stats error: {}", e))?;
+        .map_err(|e| format!("Stats error: {e}"))?;
     if rows == 0 {
-        return Err(format!("Unknown stat key: {}", key));
+        return Err(format!("Unknown stat key: {key}"));
     }
     Ok(())
 }
@@ -17,22 +17,22 @@ pub fn increment_stat(conn: &Connection, key: &str, amount: i32) -> Result<(), S
 pub fn get_all_stats(conn: &Connection) -> Result<HashMap<String, i64>, String> {
     let mut stmt = conn
         .prepare("SELECT key, value_int FROM game_stats")
-        .map_err(|e| format!("Stats query error: {}", e))?;
+        .map_err(|e| format!("Stats query error: {e}"))?;
 
     let map = stmt
         .query_map([], |row| {
             Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?))
         })
-        .map_err(|e| format!("Stats query error: {}", e))?
+        .map_err(|e| format!("Stats query error: {e}"))?
         .collect::<Result<HashMap<String, i64>, _>>()
-        .map_err(|e| format!("Stats row error: {}", e))?;
+        .map_err(|e| format!("Stats row error: {e}"))?;
 
     Ok(map)
 }
 
 pub fn reset_stats(conn: &Connection) -> Result<(), String> {
     conn.execute("UPDATE game_stats SET value_int = 0", [])
-        .map_err(|e| format!("Stats reset error: {}", e))?;
+        .map_err(|e| format!("Stats reset error: {e}"))?;
     Ok(())
 }
 

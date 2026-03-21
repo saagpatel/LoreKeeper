@@ -95,7 +95,7 @@ fn parse_command(cleaned: &str) -> GameCommand {
             } else if target.is_empty() {
                 GameCommand::Unknown("Go where?".to_string())
             } else {
-                GameCommand::Unknown(format!("Unknown direction: {}", target))
+                GameCommand::Unknown(format!("Unknown direction: {target}"))
             }
         }
 
