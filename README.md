@@ -173,6 +173,7 @@ CI mapping:
 - GitHub workflows are retained as legacy repo automation, but GitLab CI is the canonical merge gate.
 - GitLab dependency scanning is included in the baseline policy, but it is feature-gated by GitLab plan support and might not materialize as a runnable job on every project.
 - Baseline policy notes for future repos live in [`docs/gitlab-ci-baseline-notes.md`](docs/gitlab-ci-baseline-notes.md).
+- New-repo setup guidance lives in [`docs/gitlab-new-repo-checklist.md`](docs/gitlab-new-repo-checklist.md), [`docs/gitlab-baseline-matrix.md`](docs/gitlab-baseline-matrix.md), and [`docs/how-to-adopt-this-gitlab-baseline.md`](docs/how-to-adopt-this-gitlab-baseline.md).
 - Performance checks stay in the dedicated perf workflows rather than the main correctness gate.
 
 Granular commands:
