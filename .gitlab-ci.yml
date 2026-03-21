@@ -22,7 +22,7 @@ variables:
 
 verify_full:
   stage: verify
-  image: rust:1.86-bookworm
+  image: rust:1.88-bookworm
   cache: *node_cache
   before_script:
     - apt-get update
