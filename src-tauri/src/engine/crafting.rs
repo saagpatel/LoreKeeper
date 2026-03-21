@@ -15,11 +15,11 @@ pub fn execute_craft(
     // Find items in player inventory matching these names
     let first_id = match find_inventory_item(first, state) {
         Some(id) => id,
-        None => return craft_error(&format!("You don't have anything called '{}'.", first)),
+        None => return craft_error(&format!("You don't have anything called '{first}'.")),
     };
     let second_id = match find_inventory_item(second, state) {
         Some(id) => id,
-        None => return craft_error(&format!("You don't have anything called '{}'.", second)),
+        None => return craft_error(&format!("You don't have anything called '{second}'.")),
     };
 
     if first_id == second_id {
@@ -65,13 +65,13 @@ pub fn execute_craft(
                 .unwrap_or(second_id);
 
             // Add journal entry for crafting
-            let journal_id = format!("craft_{}", recipe_id);
+            let journal_id = format!("craft_{recipe_id}");
             if !state.journal.iter().any(|e| e.id == journal_id) {
                 state.journal.push(JournalEntry {
                     id: journal_id,
                     category: JournalCategory::Item,
                     title: output_name.clone(),
-                    content: format!("Crafted from {} and {}.", first_name, second_name),
+                    content: format!("Crafted from {first_name} and {second_name}."),
                     discovered_turn: state.player.turns_elapsed,
                 });
             }
@@ -79,8 +79,7 @@ pub fn execute_craft(
             ActionResult {
                 messages: vec![OutputLine {
                     text: format!(
-                        "You combine {} and {} to create {}!",
-                        first_name, second_name, output_name
+                        "You combine {first_name} and {second_name} to create {output_name}!"
                     ),
                     line_type: LineType::System,
                 }],
@@ -186,8 +185,7 @@ fn list_recipes(query: &str, state: &WorldState) -> ActionResult {
     ActionResult {
         messages: vec![OutputLine {
             text: format!(
-                "Craft {} with what? Use: craft <item> with <item>",
-                query
+                "Craft {query} with what? Use: craft <item> with <item>"
             ),
             line_type: LineType::System,
         }],

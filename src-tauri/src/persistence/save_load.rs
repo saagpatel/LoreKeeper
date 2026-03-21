@@ -17,7 +17,7 @@ pub struct SaveSlotInfo {
 
 pub fn save_game(conn: &Connection, slot_name: &str, state: &WorldState) -> Result<(), String> {
     let slot_name = resolve_save_slot_name_for_write(conn, slot_name)?;
-    let json = serde_json::to_string(state).map_err(|e| format!("Serialize error: {}", e))?;
+    let json = serde_json::to_string(state).map_err(|e| format!("Serialize error: {e}"))?;
 
     let location = state
         .locations
@@ -49,7 +49,7 @@ pub fn save_game(conn: &Connection, slot_name: &str, state: &WorldState) -> Resu
             now
         ],
     )
-    .map_err(|e| format!("Save error: {}", e))?;
+    .map_err(|e| format!("Save error: {e}"))?;
 
     Ok(())
 }
@@ -83,7 +83,7 @@ pub fn load_game(conn: &Connection, slot_name: &str) -> Result<WorldState, Strin
             params![slot_name],
             |row| row.get(0),
         )
-        .map_err(|e| format!("Save not found: {}", e))?;
+        .map_err(|e| format!("Save not found: {e}"))?;
 
     serde_json::from_str(&json)
         .map_err(|_| "Save data is corrupted and could not be loaded.".to_string())
@@ -95,7 +95,7 @@ pub fn list_saves(conn: &Connection) -> Result<Vec<SaveSlotInfo>, String> {
             "SELECT slot_name, player_location, player_health, turns_elapsed, quests_completed, saved_at
              FROM save_games ORDER BY saved_at DESC",
         )
-        .map_err(|e| format!("Query error: {}", e))?;
+        .map_err(|e| format!("Query error: {e}"))?;
 
     let rows = stmt
         .query_map([], |row| {
@@ -108,7 +108,7 @@ pub fn list_saves(conn: &Connection) -> Result<Vec<SaveSlotInfo>, String> {
                 saved_at: row.get(5)?,
             })
         })
-        .map_err(|e| format!("Query error: {}", e))?;
+        .map_err(|e| format!("Query error: {e}"))?;
 
     let mut saves = Vec::new();
     for row in rows {
@@ -129,7 +129,7 @@ pub fn delete_save(conn: &Connection, slot_name: &str) -> Result<(), String> {
         "DELETE FROM save_games WHERE slot_name = ?1",
         params![slot_name],
     )
-    .map_err(|e| format!("Delete error: {}", e))?;
+    .map_err(|e| format!("Delete error: {e}"))?;
     Ok(())
 }
 
@@ -137,13 +137,13 @@ pub fn save_settings(
     conn: &Connection,
     settings: &crate::models::GameSettings,
 ) -> Result<(), String> {
-    let json = serde_json::to_string(settings).map_err(|e| format!("Serialize error: {}", e))?;
+    let json = serde_json::to_string(settings).map_err(|e| format!("Serialize error: {e}"))?;
     conn.execute(
         "INSERT INTO settings (key, value) VALUES ('game_settings', ?1)
          ON CONFLICT(key) DO UPDATE SET value = ?1",
         params![json],
     )
-    .map_err(|e| format!("Save settings error: {}", e))?;
+    .map_err(|e| format!("Save settings error: {e}"))?;
     Ok(())
 }
 

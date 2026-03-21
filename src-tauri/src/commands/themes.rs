@@ -25,7 +25,7 @@ fn save_custom_theme_record(conn: &Connection, name: &str, config: &str) -> Resu
          ON CONFLICT(name) DO UPDATE SET config = ?2",
         rusqlite::params![name, config],
     )
-    .map_err(|e| format!("Failed to save theme: {}", e))?;
+    .map_err(|e| format!("Failed to save theme: {e}"))?;
 
     Ok(())
 }
@@ -33,12 +33,12 @@ fn save_custom_theme_record(conn: &Connection, name: &str, config: &str) -> Resu
 fn list_custom_theme_records(conn: &Connection) -> Result<Vec<CustomThemeInfo>, String> {
     let mut stmt = conn
         .prepare("SELECT name, config FROM custom_themes ORDER BY name")
-        .map_err(|e| format!("Query error: {}", e))?;
+        .map_err(|e| format!("Query error: {e}"))?;
     let rows = stmt
         .query_map([], |row| {
             Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?))
         })
-        .map_err(|e| format!("Query error: {}", e))?;
+        .map_err(|e| format!("Query error: {e}"))?;
 
     let mut themes = Vec::new();
     for row in rows {
@@ -61,7 +61,7 @@ pub fn save_custom_theme(
 ) -> Result<(), String> {
     let name = validate_theme_name(&name)?;
     let config = serde_json::to_string(&validate_theme_config(&config)?)
-        .map_err(|e| format!("Failed to serialize theme config: {}", e))?;
+        .map_err(|e| format!("Failed to serialize theme config: {e}"))?;
     let conn = db_state.0.lock().map_err(|e| e.to_string())?;
     save_custom_theme_record(&conn, &name, &config)
 }
@@ -80,7 +80,7 @@ pub fn delete_custom_theme(name: String, db_state: State<DbState>) -> Result<(),
         "DELETE FROM custom_themes WHERE name = ?1",
         rusqlite::params![name],
     )
-    .map_err(|e| format!("Delete error: {}", e))?;
+    .map_err(|e| format!("Delete error: {e}"))?;
     Ok(())
 }
 

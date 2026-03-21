@@ -70,23 +70,23 @@ pub fn describe_location(
 }
 
 pub fn describe_take(item_name: &str) -> String {
-    format!("You pick up the {}.", item_name)
+    format!("You pick up the {item_name}.")
 }
 
 pub fn describe_drop(item_name: &str) -> String {
-    format!("You drop the {}.", item_name)
+    format!("You drop the {item_name}.")
 }
 
 pub fn describe_use(item_name: &str, effect: &str) -> String {
-    format!("You use the {}. {}", item_name, effect)
+    format!("You use the {item_name}. {effect}")
 }
 
 pub fn describe_equip(item_name: &str) -> String {
-    format!("You equip the {}.", item_name)
+    format!("You equip the {item_name}.")
 }
 
 pub fn describe_unequip(item_name: &str) -> String {
-    format!("You unequip the {}.", item_name)
+    format!("You unequip the {item_name}.")
 }
 
 pub fn describe_combat_attack(
@@ -98,19 +98,17 @@ pub fn describe_combat_attack(
 ) -> String {
     if critical {
         format!(
-            "CRITICAL HIT! {} strikes {} for {} damage! ({} HP remaining)",
-            attacker, defender, damage, remaining_hp
+            "CRITICAL HIT! {attacker} strikes {defender} for {damage} damage! ({remaining_hp} HP remaining)"
         )
     } else {
         format!(
-            "{} attacks {} for {} damage. ({} HP remaining)",
-            attacker, defender, damage, remaining_hp
+            "{attacker} attacks {defender} for {damage} damage. ({remaining_hp} HP remaining)"
         )
     }
 }
 
 pub fn describe_combat_victory(enemy_name: &str) -> String {
-    format!("{} has been defeated!", enemy_name)
+    format!("{enemy_name} has been defeated!")
 }
 
 pub fn describe_combat_flee(success: bool) -> String {
@@ -182,7 +180,7 @@ pub fn describe_event_message(message: &str) -> String {
 }
 
 pub fn describe_event_damage(amount: i32) -> String {
-    format!("You take {} damage!", amount)
+    format!("You take {amount} damage!")
 }
 
 pub fn describe_inventory(player: &Player, items: &HashMap<String, Item>) -> Vec<String> {
@@ -204,7 +202,7 @@ pub fn describe_inventory(player: &Player, items: &HashMap<String, Item>) -> Vec
                 } else if player.equipped_armor.as_ref() == Some(item_id) {
                     desc.push_str(" (worn)");
                 }
-                lines.push(format!("  - {}", desc));
+                lines.push(format!("  - {desc}"));
             }
         }
     }
@@ -270,7 +268,7 @@ pub fn describe_cant_go(direction: &Direction) -> String {
 }
 
 pub fn describe_not_found(target: &str) -> String {
-    format!("You don't see '{}' here.", target)
+    format!("You don't see '{target}' here.")
 }
 
 pub fn describe_inventory_full() -> String {
@@ -312,7 +310,7 @@ pub fn describe_examine_item(item: &Item) -> Vec<String> {
         }
     }
     if let Some(lore) = &item.lore {
-        lines.push(format!("Lore: {}", lore));
+        lines.push(format!("Lore: {lore}"));
     }
     lines
 }

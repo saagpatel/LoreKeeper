@@ -30,7 +30,7 @@ pub fn load_game(
 
     let loc = state.locations.get(&state.player.location).cloned();
     let mut messages = vec![crate::models::OutputLine {
-        text: format!("Game loaded from '{}'.", slot_name),
+        text: format!("Game loaded from '{slot_name}'."),
         line_type: crate::models::LineType::System,
     }];
     if let Some(location) = loc {

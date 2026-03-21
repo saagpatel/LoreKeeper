@@ -85,7 +85,7 @@ pub fn enter_dialogue(npc_id: &str, state: &mut WorldState) -> DialogueResult {
                     npc_mut.dialogue_state = DialogueState::QuestOffered;
                 }
                 messages.push(OutputLine {
-                    text: format!("\"{}\"", quest_desc),
+                    text: format!("\"{quest_desc}\""),
                     line_type: LineType::Dialogue,
                 });
                 messages.push(OutputLine {
@@ -143,7 +143,7 @@ pub fn process_dialogue_input(
             .unwrap_or_default();
         return DialogueResult {
             messages: vec![OutputLine {
-                text: format!("You end your conversation with {}.", npc_name),
+                text: format!("You end your conversation with {npc_name}."),
                 line_type: LineType::System,
             }],
             action_type: ActionType::DisplayOnly,

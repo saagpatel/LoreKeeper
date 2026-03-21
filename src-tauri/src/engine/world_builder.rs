@@ -1064,7 +1064,7 @@ mod tests {
             "crypt_passage", "deep_chamber", "final_sanctum", "hidden_vault",
         ];
         for id in expected {
-            assert!(state.locations.contains_key(id), "Missing location: {}", id);
+            assert!(state.locations.contains_key(id), "Missing location: {id}");
         }
     }
 
@@ -1081,19 +1081,17 @@ mod tests {
                     continue;
                 }
                 let dest = state.locations.get(dest_id).unwrap_or_else(|| {
-                    panic!("Exit from {} -> {} leads to non-existent location {}", loc_id, dir, dest_id)
+                    panic!("Exit from {loc_id} -> {dir} leads to non-existent location {dest_id}")
                 });
                 let reverse = dir.opposite();
                 assert!(
                     dest.exits.contains_key(&reverse),
-                    "Exit {} -> {} ({}) has no return path {} -> {} ({})",
-                    loc_id, dest_id, dir, dest_id, loc_id, reverse
+                    "Exit {loc_id} -> {dest_id} ({dir}) has no return path {dest_id} -> {loc_id} ({reverse})"
                 );
                 assert_eq!(
                     dest.exits.get(&reverse).unwrap(),
                     loc_id,
-                    "Return path from {} ({}) doesn't lead back to {}",
-                    dest_id, reverse, loc_id
+                    "Return path from {dest_id} ({reverse}) doesn't lead back to {loc_id}"
                 );
             }
         }
@@ -1106,8 +1104,7 @@ mod tests {
             for item_id in &loc.items {
                 assert!(
                     state.items.contains_key(item_id),
-                    "Location {} references non-existent item {}",
-                    loc_id, item_id
+                    "Location {loc_id} references non-existent item {item_id}"
                 );
             }
         }
@@ -1120,8 +1117,7 @@ mod tests {
             for npc_id in &loc.npcs {
                 assert!(
                     state.npcs.contains_key(npc_id),
-                    "Location {} references non-existent NPC {}",
-                    loc_id, npc_id
+                    "Location {loc_id} references non-existent NPC {npc_id}"
                 );
             }
         }
@@ -1147,22 +1143,19 @@ mod tests {
                 QuestObjective::FetchItem(item_id) => {
                     assert!(
                         state.items.contains_key(item_id),
-                        "Quest {} has FetchItem objective for non-existent item {}",
-                        quest_id, item_id
+                        "Quest {quest_id} has FetchItem objective for non-existent item {item_id}"
                     );
                 }
                 QuestObjective::KillNpc(npc_id) => {
                     assert!(
                         state.npcs.contains_key(npc_id),
-                        "Quest {} has KillNpc objective for non-existent NPC {}",
-                        quest_id, npc_id
+                        "Quest {quest_id} has KillNpc objective for non-existent NPC {npc_id}"
                     );
                 }
                 QuestObjective::ReachLocation(loc_id) => {
                     assert!(
                         state.locations.contains_key(loc_id),
-                        "Quest {} has ReachLocation objective for non-existent location {}",
-                        quest_id, loc_id
+                        "Quest {quest_id} has ReachLocation objective for non-existent location {loc_id}"
                     );
                 }
             }
@@ -1197,8 +1190,7 @@ mod tests {
                 let in_npc_inventory = state.npcs.values().any(|n| n.items.contains(key_id));
                 assert!(
                     in_items && (in_locations || in_npc_inventory),
-                    "Locked exit {} -> {} requires key {} but it doesn't exist in the world",
-                    loc_id, dir, key_id
+                    "Locked exit {loc_id} -> {dir} requires key {key_id} but it doesn't exist in the world"
                 );
             }
         }

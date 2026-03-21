@@ -123,7 +123,7 @@ impl OllamaClient {
             .timeout(std::time::Duration::from_secs(5))
             .send()
             .await
-            .map_err(|e| format!("Failed to connect to Ollama: {}", e))?;
+            .map_err(|e| format!("Failed to connect to Ollama: {e}"))?;
 
         if !resp.status().is_success() {
             return Err(format!("Ollama returned status: {}", resp.status()));
@@ -132,7 +132,7 @@ impl OllamaClient {
         let tags: TagsResponse = resp
             .json()
             .await
-            .map_err(|e| format!("Failed to parse models: {}", e))?;
+            .map_err(|e| format!("Failed to parse models: {e}"))?;
 
         Ok(tags
             .models
@@ -164,7 +164,7 @@ impl OllamaClient {
             .json(&request)
             .send()
             .await
-            .map_err(|e| format!("Failed to connect to Ollama: {}", e))?;
+            .map_err(|e| format!("Failed to connect to Ollama: {e}"))?;
 
         if !resp.status().is_success() {
             return Err(format!("Ollama returned status: {}", resp.status()));
@@ -204,7 +204,7 @@ impl OllamaClient {
                         }
                         Some(Err(e)) => {
                             return Some((
-                                Err(format!("Stream error: {}", e)),
+                                Err(format!("Stream error: {e}")),
                                 (byte_stream, buffer),
                             ));
                         }

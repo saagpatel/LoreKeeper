@@ -48,12 +48,12 @@ pub fn ensure_module_json_size(json: &str) -> Result<(), String> {
 
 pub fn parse_module_json(json: &str) -> Result<WorldState, String> {
     ensure_module_json_size(json)?;
-    serde_json::from_str(json).map_err(|e| format!("Invalid module JSON: {}", e))
+    serde_json::from_str(json).map_err(|e| format!("Invalid module JSON: {e}"))
 }
 
 pub fn inspect_module(path: &Path) -> Result<WorldState, String> {
     let metadata =
-        std::fs::metadata(path).map_err(|e| format!("Failed to inspect module file: {}", e))?;
+        std::fs::metadata(path).map_err(|e| format!("Failed to inspect module file: {e}"))?;
     if !metadata.is_file() {
         return Err("Module path must point to a file.".into());
     }
@@ -69,7 +69,7 @@ pub fn inspect_module(path: &Path) -> Result<WorldState, String> {
     }
 
     let content =
-        std::fs::read_to_string(path).map_err(|e| format!("Failed to read module: {}", e))?;
+        std::fs::read_to_string(path).map_err(|e| format!("Failed to read module: {e}"))?;
     let state = parse_module_json(&content)?;
     validate_module_state(&state)?;
     Ok(state)
@@ -138,8 +138,7 @@ pub fn validate_module_state(state: &WorldState) -> Result<(), String> {
     )?;
     if state.player.max_inventory > MAX_PLAYER_MAX_INVENTORY {
         return Err(format!(
-            "Player max inventory exceeds limit of {}.",
-            MAX_PLAYER_MAX_INVENTORY
+            "Player max inventory exceeds limit of {MAX_PLAYER_MAX_INVENTORY}."
         ));
     }
     if state.player.inventory.len() > state.player.max_inventory {
@@ -156,12 +155,12 @@ pub fn validate_module_state(state: &WorldState) -> Result<(), String> {
 
     for (location_key, location) in &state.locations {
         check_string_len(
-            format!("location key '{}'", location_key),
+            format!("location key '{location_key}'"),
             location_key,
             MAX_ID_LEN,
         )?;
         check_string_len(
-            format!("location '{}'.id", location_key),
+            format!("location '{location_key}'.id"),
             &location.id,
             MAX_ID_LEN,
         )?;
@@ -172,50 +171,48 @@ pub fn validate_module_state(state: &WorldState) -> Result<(), String> {
             ));
         }
         check_string_len(
-            format!("location '{}'.name", location_key),
+            format!("location '{location_key}'.name"),
             &location.name,
             MAX_SHORT_TEXT_LEN,
         )?;
         check_string_len(
-            format!("location '{}'.description", location_key),
+            format!("location '{location_key}'.description"),
             &location.description,
             MAX_LONG_TEXT_LEN,
         )?;
         check_optional_string_len(
-            format!("location '{}'.examineDetails", location_key),
+            format!("location '{location_key}'.examineDetails"),
             location.examine_details.as_deref(),
             MAX_LONG_TEXT_LEN,
         )?;
         check_optional_string_len(
-            format!("location '{}'.revisitDescription", location_key),
+            format!("location '{location_key}'.revisitDescription"),
             location.revisit_description.as_deref(),
             MAX_LONG_TEXT_LEN,
         )?;
         check_count(
-            format!("location '{}'.items", location_key),
+            format!("location '{location_key}'.items"),
             location.items.len(),
             MAX_LOCATION_ITEMS,
         )?;
         check_count(
-            format!("location '{}'.npcs", location_key),
+            format!("location '{location_key}'.npcs"),
             location.npcs.len(),
             MAX_LOCATION_NPCS,
         )?;
         if location.exits.len() > 6 {
             return Err(format!(
-                "Location '{}' has too many exits; maximum is 6.",
-                location_key
+                "Location '{location_key}' has too many exits; maximum is 6."
             ));
         }
         if location.locked_exits.len() > 6 {
             return Err(format!(
-                "Location '{}' has too many locked exits; maximum is 6.",
-                location_key
+                "Location '{location_key}' has too many locked exits; maximum is 6."
             ));
         }
         for secret in &location.discovered_secrets {
             check_string_len(
-                format!("location '{}'.discoveredSecrets entry", location_key),
+                format!("location '{location_key}'.discoveredSecrets entry"),
                 secret,
                 MAX_ID_LEN,
             )?;
@@ -226,14 +223,13 @@ pub fn validate_module_state(state: &WorldState) -> Result<(), String> {
     for (loc_id, loc) in &state.locations {
         for (dir, target) in &loc.exits {
             check_string_len(
-                format!("location '{}'.exit {:?}", loc_id, dir),
+                format!("location '{loc_id}'.exit {dir:?}"),
                 target,
                 MAX_ID_LEN,
             )?;
             if !state.locations.contains_key(target) {
                 return Err(format!(
-                    "Location '{}' has exit {:?} to '{}' which doesn't exist.",
-                    loc_id, dir, target
+                    "Location '{loc_id}' has exit {dir:?} to '{target}' which doesn't exist."
                 ));
             }
         }
@@ -241,7 +237,7 @@ pub fn validate_module_state(state: &WorldState) -> Result<(), String> {
         // Keys may be quest rewards or event-granted, so we don't validate them
         for key_id in loc.locked_exits.values() {
             check_string_len(
-                format!("location '{}'.lockedExits key id", loc_id),
+                format!("location '{loc_id}'.lockedExits key id"),
                 key_id,
                 MAX_ID_LEN,
             )?;
@@ -253,8 +249,7 @@ pub fn validate_module_state(state: &WorldState) -> Result<(), String> {
         for npc_id in &loc.npcs {
             if !state.npcs.contains_key(npc_id) {
                 return Err(format!(
-                    "Location '{}' references NPC '{}' which doesn't exist.",
-                    loc_id, npc_id
+                    "Location '{loc_id}' references NPC '{npc_id}' which doesn't exist."
                 ));
             }
         }
@@ -265,8 +260,7 @@ pub fn validate_module_state(state: &WorldState) -> Result<(), String> {
         for item_id in &loc.items {
             if !state.items.contains_key(item_id) {
                 return Err(format!(
-                    "Location '{}' references item '{}' which doesn't exist.",
-                    loc_id, item_id
+                    "Location '{loc_id}' references item '{item_id}' which doesn't exist."
                 ));
             }
         }
@@ -276,8 +270,7 @@ pub fn validate_module_state(state: &WorldState) -> Result<(), String> {
         check_string_len("player.inventory item id", item_id, MAX_ID_LEN)?;
         if !state.items.contains_key(item_id) {
             return Err(format!(
-                "Player inventory references item '{}' which doesn't exist.",
-                item_id
+                "Player inventory references item '{item_id}' which doesn't exist."
             ));
         }
     }
@@ -285,8 +278,7 @@ pub fn validate_module_state(state: &WorldState) -> Result<(), String> {
         check_string_len("player.equippedWeapon", weapon_id, MAX_ID_LEN)?;
         if !state.items.contains_key(weapon_id) {
             return Err(format!(
-                "Player equipped weapon '{}' which doesn't exist.",
-                weapon_id
+                "Player equipped weapon '{weapon_id}' which doesn't exist."
             ));
         }
     }
@@ -294,15 +286,14 @@ pub fn validate_module_state(state: &WorldState) -> Result<(), String> {
         check_string_len("player.equippedArmor", armor_id, MAX_ID_LEN)?;
         if !state.items.contains_key(armor_id) {
             return Err(format!(
-                "Player equipped armor '{}' which doesn't exist.",
-                armor_id
+                "Player equipped armor '{armor_id}' which doesn't exist."
             ));
         }
     }
 
     for (item_key, item) in &state.items {
-        check_string_len(format!("item key '{}'", item_key), item_key, MAX_ID_LEN)?;
-        check_string_len(format!("item '{}'.id", item_key), &item.id, MAX_ID_LEN)?;
+        check_string_len(format!("item key '{item_key}'"), item_key, MAX_ID_LEN)?;
+        check_string_len(format!("item '{item_key}'.id"), &item.id, MAX_ID_LEN)?;
         if item.id != *item_key {
             return Err(format!(
                 "Item map key '{}' must match item id '{}'.",
@@ -310,30 +301,30 @@ pub fn validate_module_state(state: &WorldState) -> Result<(), String> {
             ));
         }
         check_string_len(
-            format!("item '{}'.name", item_key),
+            format!("item '{item_key}'.name"),
             &item.name,
             MAX_SHORT_TEXT_LEN,
         )?;
         check_string_len(
-            format!("item '{}'.description", item_key),
+            format!("item '{item_key}'.description"),
             &item.description,
             MAX_LONG_TEXT_LEN,
         )?;
         check_optional_string_len(
-            format!("item '{}'.keyId", item_key),
+            format!("item '{item_key}'.keyId"),
             item.key_id.as_deref(),
             MAX_ID_LEN,
         )?;
         check_optional_string_len(
-            format!("item '{}'.lore", item_key),
+            format!("item '{item_key}'.lore"),
             item.lore.as_deref(),
             MAX_LONG_TEXT_LEN,
         )?;
     }
 
     for (npc_key, npc) in &state.npcs {
-        check_string_len(format!("npc key '{}'", npc_key), npc_key, MAX_ID_LEN)?;
-        check_string_len(format!("npc '{}'.id", npc_key), &npc.id, MAX_ID_LEN)?;
+        check_string_len(format!("npc key '{npc_key}'"), npc_key, MAX_ID_LEN)?;
+        check_string_len(format!("npc '{npc_key}'.id"), &npc.id, MAX_ID_LEN)?;
         if npc.id != *npc_key {
             return Err(format!(
                 "NPC map key '{}' must match npc id '{}'.",
@@ -341,52 +332,51 @@ pub fn validate_module_state(state: &WorldState) -> Result<(), String> {
             ));
         }
         check_string_len(
-            format!("npc '{}'.name", npc_key),
+            format!("npc '{npc_key}'.name"),
             &npc.name,
             MAX_SHORT_TEXT_LEN,
         )?;
         check_string_len(
-            format!("npc '{}'.description", npc_key),
+            format!("npc '{npc_key}'.description"),
             &npc.description,
             MAX_LONG_TEXT_LEN,
         )?;
         check_string_len(
-            format!("npc '{}'.personalitySeed", npc_key),
+            format!("npc '{npc_key}'.personalitySeed"),
             &npc.personality_seed,
             MAX_PERSONALITY_SEED_LEN,
         )?;
         check_optional_string_len(
-            format!("npc '{}'.questGiver", npc_key),
+            format!("npc '{npc_key}'.questGiver"),
             npc.quest_giver.as_deref(),
             MAX_ID_LEN,
         )?;
         check_optional_string_len(
-            format!("npc '{}'.examineText", npc_key),
+            format!("npc '{npc_key}'.examineText"),
             npc.examine_text.as_deref(),
             MAX_LONG_TEXT_LEN,
         )?;
         check_count(
-            format!("npc '{}'.items", npc_key),
+            format!("npc '{npc_key}'.items"),
             npc.items.len(),
             MAX_NPC_ITEMS,
         )?;
         check_count(
-            format!("npc '{}'.memory", npc_key),
+            format!("npc '{npc_key}'.memory"),
             npc.memory.len(),
             MAX_NPC_MEMORY_ENTRIES,
         )?;
         for item_id in &npc.items {
-            check_string_len(format!("npc '{}'.item id", npc_key), item_id, MAX_ID_LEN)?;
+            check_string_len(format!("npc '{npc_key}'.item id"), item_id, MAX_ID_LEN)?;
             if !state.items.contains_key(item_id) {
                 return Err(format!(
-                    "NPC '{}' references item '{}' which doesn't exist.",
-                    npc_key, item_id
+                    "NPC '{npc_key}' references item '{item_id}' which doesn't exist."
                 ));
             }
         }
         for memory in &npc.memory {
             check_string_len(
-                format!("npc '{}'.memory event", npc_key),
+                format!("npc '{npc_key}'.memory event"),
                 &memory.event,
                 MAX_MEMORY_EVENT_LEN,
             )?;
@@ -394,8 +384,8 @@ pub fn validate_module_state(state: &WorldState) -> Result<(), String> {
     }
 
     for (quest_key, quest) in &state.quests {
-        check_string_len(format!("quest key '{}'", quest_key), quest_key, MAX_ID_LEN)?;
-        check_string_len(format!("quest '{}'.id", quest_key), &quest.id, MAX_ID_LEN)?;
+        check_string_len(format!("quest key '{quest_key}'"), quest_key, MAX_ID_LEN)?;
+        check_string_len(format!("quest '{quest_key}'.id"), &quest.id, MAX_ID_LEN)?;
         if quest.id != *quest_key {
             return Err(format!(
                 "Quest map key '{}' must match quest id '{}'.",
@@ -403,17 +393,17 @@ pub fn validate_module_state(state: &WorldState) -> Result<(), String> {
             ));
         }
         check_string_len(
-            format!("quest '{}'.name", quest_key),
+            format!("quest '{quest_key}'.name"),
             &quest.name,
             MAX_SHORT_TEXT_LEN,
         )?;
         check_string_len(
-            format!("quest '{}'.description", quest_key),
+            format!("quest '{quest_key}'.description"),
             &quest.description,
             MAX_LONG_TEXT_LEN,
         )?;
         check_string_len(
-            format!("quest '{}'.giver", quest_key),
+            format!("quest '{quest_key}'.giver"),
             &quest.giver,
             MAX_ID_LEN,
         )?;
@@ -424,60 +414,56 @@ pub fn validate_module_state(state: &WorldState) -> Result<(), String> {
             ));
         }
         check_count(
-            format!("quest '{}'.reward", quest_key),
+            format!("quest '{quest_key}'.reward"),
             quest.reward.len(),
             MAX_QUEST_REWARDS,
         )?;
         for reward_id in &quest.reward {
             check_string_len(
-                format!("quest '{}'.reward item", quest_key),
+                format!("quest '{quest_key}'.reward item"),
                 reward_id,
                 MAX_ID_LEN,
             )?;
             if !state.items.contains_key(reward_id) {
                 return Err(format!(
-                    "Quest '{}' reward item '{}' doesn't exist.",
-                    quest_key, reward_id
+                    "Quest '{quest_key}' reward item '{reward_id}' doesn't exist."
                 ));
             }
         }
         match &quest.objective {
             crate::models::QuestObjective::FetchItem(item_id) => {
                 check_string_len(
-                    format!("quest '{}'.objective.fetchItem", quest_key),
+                    format!("quest '{quest_key}'.objective.fetchItem"),
                     item_id,
                     MAX_ID_LEN,
                 )?;
                 if !state.items.contains_key(item_id) {
                     return Err(format!(
-                        "Quest '{}' objective item '{}' doesn't exist.",
-                        quest_key, item_id
+                        "Quest '{quest_key}' objective item '{item_id}' doesn't exist."
                     ));
                 }
             }
             crate::models::QuestObjective::KillNpc(npc_id) => {
                 check_string_len(
-                    format!("quest '{}'.objective.killNpc", quest_key),
+                    format!("quest '{quest_key}'.objective.killNpc"),
                     npc_id,
                     MAX_ID_LEN,
                 )?;
                 if !state.npcs.contains_key(npc_id) {
                     return Err(format!(
-                        "Quest '{}' objective NPC '{}' doesn't exist.",
-                        quest_key, npc_id
+                        "Quest '{quest_key}' objective NPC '{npc_id}' doesn't exist."
                     ));
                 }
             }
             crate::models::QuestObjective::ReachLocation(location_id) => {
                 check_string_len(
-                    format!("quest '{}'.objective.reachLocation", quest_key),
+                    format!("quest '{quest_key}'.objective.reachLocation"),
                     location_id,
                     MAX_ID_LEN,
                 )?;
                 if !state.locations.contains_key(location_id) {
                     return Err(format!(
-                        "Quest '{}' objective location '{}' doesn't exist.",
-                        quest_key, location_id
+                        "Quest '{quest_key}' objective location '{location_id}' doesn't exist."
                     ));
                 }
             }

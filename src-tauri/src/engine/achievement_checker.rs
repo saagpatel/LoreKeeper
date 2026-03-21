@@ -122,7 +122,7 @@ mod tests {
             state
                 .player
                 .visited_locations
-                .insert(format!("loc_{}", i));
+                .insert(format!("loc_{i}"));
         }
         let earned = check_achievements(&state, &ActionType::DisplayOnly);
         assert!(earned.contains(&"explorer".to_string()));
@@ -132,7 +132,7 @@ mod tests {
     fn hoarder_needs_8_items() {
         let mut state = world_builder::build_thornhold();
         for i in 0..8 {
-            state.player.inventory.push(format!("item_{}", i));
+            state.player.inventory.push(format!("item_{i}"));
         }
         let earned = check_achievements(&state, &ActionType::DisplayOnly);
         assert!(earned.contains(&"hoarder".to_string()));

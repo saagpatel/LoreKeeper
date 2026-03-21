@@ -97,14 +97,14 @@ pub fn process_events(
                 let name = effect.name.clone();
                 state.player.status_effects.push(effect);
                 messages.push(OutputLine {
-                    text: format!("You are now affected by: {}", name),
+                    text: format!("You are now affected by: {name}"),
                     line_type: LineType::System,
                 });
             }
             EventAction::RemoveStatus(name) => {
                 state.player.status_effects.retain(|e| e.name != name);
                 messages.push(OutputLine {
-                    text: format!("{} has worn off.", name),
+                    text: format!("{name} has worn off."),
                     line_type: LineType::System,
                 });
             }
@@ -159,14 +159,14 @@ pub fn process_turn_events(state: &mut WorldState) -> Vec<OutputLine> {
                 let name = effect.name.clone();
                 state.player.status_effects.push(effect);
                 messages.push(OutputLine {
-                    text: format!("You are now affected by: {}", name),
+                    text: format!("You are now affected by: {name}"),
                     line_type: LineType::System,
                 });
             }
             EventAction::RemoveStatus(name) => {
                 state.player.status_effects.retain(|e| e.name != name);
                 messages.push(OutputLine {
-                    text: format!("{} has worn off.", name),
+                    text: format!("{name} has worn off."),
                     line_type: LineType::System,
                 });
             }
@@ -213,7 +213,7 @@ pub fn process_turn_events(state: &mut WorldState) -> Vec<OutputLine> {
     }
     for name in &expired {
         messages.push(OutputLine {
-            text: format!("{} has worn off.", name),
+            text: format!("{name} has worn off."),
             line_type: LineType::System,
         });
     }
