@@ -51,7 +51,7 @@ jobs:
           cat "$manifest"
 
       - name: Upload internal macOS artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: lorekeeper-internal-macos
           path: release-artifacts/internal/macos
