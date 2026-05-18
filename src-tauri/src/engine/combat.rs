@@ -36,9 +36,9 @@ pub fn flee_success_rate(difficulty: &Difficulty) -> f64 {
 }
 
 fn calculate_damage(attacker_attack: i32, defender_defense: i32, multiplier: f64) -> (i32, bool) {
-    let mut rng = rand::thread_rng();
-    let variance = rng.gen_range(-2..=2);
-    let critical = rng.gen_range(0..10) == 0; // 10% crit chance
+    let mut rng = rand::rng();
+    let variance = rng.random_range(-2..=2);
+    let critical = rng.random_range(0..10) == 0; // 10% crit chance
     let base_damage = (attacker_attack - defender_defense + variance).max(1);
     let scaled = ((base_damage as f64) * multiplier).round() as i32;
     let damage = if critical { scaled * 2 } else { scaled }.max(1);
@@ -275,8 +275,8 @@ pub fn execute_flee(state: &mut WorldState) -> CombatResult {
     };
 
     let mut messages = Vec::new();
-    let mut rng = rand::thread_rng();
-    let success = rng.gen_bool(flee_success_rate(&state.difficulty));
+    let mut rng = rand::rng();
+    let success = rng.random_bool(flee_success_rate(&state.difficulty));
 
     if !success {
         messages.push(OutputLine {
@@ -336,7 +336,7 @@ pub fn execute_flee(state: &mut WorldState) -> CombatResult {
     if let Some(loc) = state.locations.get(&current_loc) {
         let exits: Vec<String> = loc.exits.values().cloned().collect();
         if !exits.is_empty() {
-            let idx = rng.gen_range(0..exits.len());
+            let idx = rng.random_range(0..exits.len());
             let new_loc = &exits[idx];
             state.player.location = new_loc.clone();
             state.player.visited_locations.insert(new_loc.clone());
