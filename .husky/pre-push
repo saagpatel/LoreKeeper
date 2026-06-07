@@ -2,7 +2,9 @@
 # codex-os-managed
 . "$(dirname -- "$0")/_/husky.sh" 2>/dev/null || true
 
-if command -v pnpm >/dev/null 2>&1; then
+if [ -f package-lock.json ] && command -v npm >/dev/null 2>&1; then
+  npm run git:guard:no-main-push --if-present
+elif [ -f pnpm-lock.yaml ] && command -v pnpm >/dev/null 2>&1; then
   pnpm git:guard:no-main-push
 elif command -v npm >/dev/null 2>&1; then
   npm run git:guard:no-main-push --if-present

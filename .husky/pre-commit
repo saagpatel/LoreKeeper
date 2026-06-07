@@ -3,12 +3,14 @@
 . "$(dirname -- "$0")/_/husky.sh" 2>/dev/null || true
 
 run_script() {
-  if command -v pnpm >/dev/null 2>&1; then
-    pnpm "$@"
-  elif command -v npm >/dev/null 2>&1; then
+  if [ -f package-lock.json ] && command -v npm >/dev/null 2>&1; then
     npm run "$1" --if-present
+  elif [ -f pnpm-lock.yaml ] && command -v pnpm >/dev/null 2>&1; then
+    pnpm "$@"
   elif command -v yarn >/dev/null 2>&1; then
     yarn "$@"
+  elif command -v npm >/dev/null 2>&1; then
+    npm run "$1" --if-present
   else
     echo "No supported package manager found."
     exit 1

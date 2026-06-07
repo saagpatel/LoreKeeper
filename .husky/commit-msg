@@ -2,7 +2,9 @@
 # codex-os-managed
 . "$(dirname -- "$0")/_/husky.sh" 2>/dev/null || true
 
-if command -v pnpm >/dev/null 2>&1; then
+if [ -f package-lock.json ] && command -v npm >/dev/null 2>&1; then
+  npx commitlint --edit "$1"
+elif [ -f pnpm-lock.yaml ] && command -v pnpm >/dev/null 2>&1; then
   pnpm commitlint --edit "$1"
 elif command -v npm >/dev/null 2>&1; then
   npx commitlint --edit "$1"
