@@ -1,7 +1,11 @@
 # codex-os-managed
+npm ci --ignore-scripts
 npm run git:guard:all
 npm run verify:frontend
 npm run perf:bundle
+node scripts/perf/compare-metric.mjs .perf-baselines/bundle.json .perf-results/bundle.json totalBytes 0.08
 npm run perf:build
+node scripts/perf/compare-metric.mjs .perf-baselines/build-time.json .perf-results/build-time.json buildMs 0.15
 npm run perf:assets
 npm run perf:memory
+npm run perf:summary

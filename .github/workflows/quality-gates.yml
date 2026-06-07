@@ -26,7 +26,16 @@ jobs:
         run: node scripts/ci/require-tests-and-docs.mjs
 
       - name: Verify commands
-        run: bash .codex/scripts/run_verify_commands.sh
+        run: |
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            npm run verify:frontend
+            npm run perf:bundle
+            npm run perf:build
+            npm run perf:assets
+            npm run perf:memory
+          else
+            bash .codex/scripts/run_verify_commands.sh
+          fi
 
       - name: Diff coverage
         run: |
@@ -35,7 +44,11 @@ jobs:
             exit 0
           fi
 
-          compare_branch="origin/${GITHUB_BASE_REF:-master}"
+          compare_branch="origin/${GITHUB_BASE_REF:-main}"
+          if ! git rev-parse --verify "$compare_branch" >/dev/null 2>&1; then
+            compare_branch="origin/main"
+          fi
+
           if ! git rev-parse --verify "$compare_branch" >/dev/null 2>&1; then
             compare_branch="origin/master"
           fi
