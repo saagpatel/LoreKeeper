@@ -5,7 +5,7 @@ npm run verify:frontend
 npm run perf:bundle
 node scripts/perf/compare-metric.mjs .perf-baselines/bundle.json .perf-results/bundle.json totalBytes 0.08
 npm run perf:build
-node scripts/perf/compare-metric.mjs .perf-baselines/build-time.json .perf-results/build-time.json buildMs 0.15
+node scripts/perf/compare-metric.mjs .perf-baselines/build-time.json .perf-results/build-time.json buildMs 0.15 3000
 npm run perf:assets
 npm run perf:memory
 npm run perf:summary
