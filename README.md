@@ -1,40 +1,10 @@
 # LoreKeeper
 
-**A desktop-first narrative dungeon crawler where every command becomes a story.**
+[![Rust](https://img.shields.io/badge/Rust-%23dea584?style=flat-square&logo=rust)](#) [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](#) [![Platform](https://img.shields.io/badge/platform-macOS-lightgrey?style=flat-square)](#)
 
-LoreKeeper blends a traditional text adventure with a modern local-first stack: Rust keeps the world state honest, React/Tauri make it feel like a real desktop game, and an optional local LLM turns your actions into living prose. If no model is available, the game still works with strong template narration, so the experience never collapses into a broken demo.
+> Every command becomes a story — a text adventure where Rust keeps the world honest and a local LLM makes it feel alive.
 
-## Why Try LoreKeeper?
-
-- Play a handcrafted dark-fantasy adventure with room for experimentation, secrets, and multiple endings.
-- Get the feel of AI-assisted storytelling without making the whole game depend on cloud services or flaky prompts.
-- Explore a project that is already beyond prototype stage: playable, test-covered, internally release-ready on macOS, and built with a real engine and tooling story behind it.
-- Tinker with modules, themes, stats, replays, and map editing if you want more than a single playthrough.
-
-## Current Stage
-
-LoreKeeper is currently **internal release-ready on macOS** and actively maintained.
-
-- The core game loop, save/load flow, replay/stats surfaces, theme support, and module tooling are implemented.
-- The app is playable with or without Ollama.
-- Internal release docs, verification flows, and low-disk dev workflows are already in place.
-- Linux desktop dependency follow-up work exists, but it does not block the current macOS release line.
-
-## Screenshots
-
-![LoreKeeper title screen](docs/images/readme/title-screen.png)
-
-Title screen and mode hub for the current build.
-
-![LoreKeeper gameplay screen](docs/images/readme/gameplay-screen.png)
-
-Live gameplay with terminal narration, command input, and the right-side game panels.
-
-![LoreKeeper map editor](docs/images/readme/map-editor-screen.png)
-
-Built-in map editor for custom adventures and module experimentation.
-
-## The Game: _The Depths of Thornhold_
+LoreKeeper blends a traditional text adventure with a modern local-first stack. Rust manages world state with deterministic correctness, React and Tauri give it a real desktop feel, and an optional local LLM (via Ollama) turns your actions into living prose. If no model is available, the game runs on strong template narration — the experience never collapses into a broken demo.
 
 ```
 You descend into the ruins of Thornhold, a fortress long abandoned
@@ -42,260 +12,58 @@ to darkness. Somewhere below, the Dungeon Heart pulses with ancient
 power. Will you claim it, destroy it, or strike a deal with its keeper?
 ```
 
-- 14 handcrafted locations + 5 procedurally generated dungeon rooms
-- 7 NPCs with memory, relationships, and LLM-powered dialogue
-- 25+ items, a crafting system, and hidden secret commands
-- 5 quests, multiple endings, and a full achievement system
-- Combat, status effects, difficulty modes, and a journal/codex
-- Replay system with ghost playthrough comparison
-- Visual map editor for creating your own adventure modules
+## Features
 
-## What Makes It Different
-
-- **Story with structure**: the narration can be dynamic, but the game rules, world state, quests, combat, and progression live in a real engine.
-- **Local-first by design**: Ollama support is optional, local-only, and backed by a template fallback so the game stays reliable.
-- **Built to keep growing**: custom modules, themes, replay comparison, and map editing make it more than a one-off experiment.
-- **Developer-friendly**: the repo already supports lean-dev mode, deterministic verification, cleanup commands, and an internal release workflow.
-
-## Tech Stack
-
-| Layer       | Tech                                                             |
-| ----------- | ---------------------------------------------------------------- |
-| Desktop app | [Tauri 2](https://tauri.app/)                                    |
-| Game engine | Rust                                                             |
-| Frontend    | React 19 + TypeScript (strict)                                   |
-| Narration   | [Ollama](https://ollama.com/) (local LLM) with template fallback |
-| Persistence | SQLite (saves, stats, achievements, themes)                      |
+- **14 Handcrafted Locations + 5 Procedural Rooms** — A cohesive dark-fantasy world with secrets, hidden commands, and multiple endings
+- **LLM-Powered Dialogue** — 7 NPCs with persistent memory, relationships, and AI-generated responses when Ollama is available; graceful fallback to template narration when it isn't
+- **Built-In Map Editor** — Design custom adventures and export playable modules without touching code
+- **Replay & Stats** — Full session replay, run statistics, and a history browser to review past playthroughs
+- **Theme Support** — Swap visual themes without restarting; custom color palettes for mood and accessibility
+- **25+ Items + Crafting** — Discoverable items, a crafting system, and hidden combination recipes
 
 ## Quick Start
 
-If you want to try the game locally as a developer:
+### Prerequisites
+
+- Node.js 20+
+- pnpm 9+
+- Rust toolchain (stable) + Tauri v2 prerequisites for macOS
+- [Ollama](https://ollama.ai) with a pulled model (optional — enhances NPC dialogue)
+
+### Installation
 
 ```bash
-# Prerequisites: Rust, Node.js, and optionally Ollama
-
-npm install
-npm run tauri dev
-
-# For LLM narration (optional)
-ollama pull llama3.2
+git clone https://github.com/saagpatel/LoreKeeper.git
+cd LoreKeeper
+pnpm install
+cp .env.example .env
 ```
 
-What to expect:
-
-- `npm run tauri dev` launches the full desktop app.
-- If Ollama is not installed, LoreKeeper still runs with template narration.
-- For a lower-disk day-to-day workflow, use `npm run dev:lean`.
-
-## Internal Release
-
-For the macOS internal release workflow, artifact contract, tester guidance, release handoff, and rollback reference, use:
-
-- `docs/internal-release-handoff.md`
-- `docs/internal-release-macos.md`
-- `docs/internal-release-checklist.md`
-- `docs/internal-release-team-update.md`
-
-## Dev Modes
-
-### Normal dev
+### Run (development)
 
 ```bash
-npm run tauri dev
+pnpm dev
 ```
 
-- Fastest restarts after the first compile because Rust/Vite build artifacts are kept locally (`$HOME/.cache/lorekeeper/cargo-target`, `node_modules/.vite`).
-- Uses more disk over time.
-
-### Lean dev (low disk)
+### Build (desktop app)
 
 ```bash
-npm run dev:lean
+pnpm build
 ```
 
-- Starts the same app flow (`tauri dev`) but redirects heavy temporary build output to OS temp directories.
-- Temporary Cargo and Vite caches are removed automatically when the process exits.
-- Extra Tauri args are supported with `npm run dev:lean -- <args>`.
-- Tradeoff: first startup and recompiles are slower than normal dev because cached artifacts are not persisted between runs.
+## Tech Stack
 
-### Daily low-disk command
-
-Use this daily command to keep local disk growth under control while developing:
-
-```bash
-npm run dev:lean
-```
-
-## Cleanup Commands
-
-```bash
-# Remove heavy build artifacts only (keeps dependencies installed)
-npm run clean:heavy
-
-# Remove all reproducible local caches (includes node_modules)
-npm run clean:local
-```
-
-Both cleanup commands also clear the default Rust verification cache at
-`$HOME/.cache/lorekeeper/cargo-target` (or `LOREKEEPER_CARGO_TARGET_DIR` if set).
-
-## Engineering Verification Workflow
-
-Use the command below depending on the level of confidence you need:
-
-```bash
-# Local-fast frontend check (no Rust/Tauri system packages required)
-npm run verify:frontend
-
-# Full app correctness gate used by the main CI workflow
-npm run verify:full
-
-# Canonical local gate runner for deterministic script order
-bash .codex/scripts/run_verify_commands.sh
-
-# Browser-level user flow coverage
-npm run test:e2e
-```
-
-What each command means:
-
-- `npm run verify:frontend`: fastest everyday check for TypeScript, Vitest, and frontend build health.
-- `npm run verify:full`: the repo's main correctness gate; it runs frontend verification plus Rust lint and Rust tests.
-- `bash .codex/scripts/run_verify_commands.sh`: the canonical deterministic local runner for `.codex/verify.commands`, including git hygiene and the non-Lighthouse perf checks.
-- `npm run test:e2e`: Playwright coverage for browser-level flows using the existing `e2e` config.
-
-CI mapping:
-
-- `.gitlab-ci.yml` is the active baseline for this repo:
-  - `verify_full` runs `npm run verify:full`
-  - `secret_detection` runs GitLab secret scanning on merge requests and `master`
-  - `e2e_tests` runs `npm run test:e2e`
-- GitHub workflows are retained as legacy repo automation, but GitLab CI is the canonical merge gate.
-- GitLab dependency scanning is included in the baseline policy, but it is feature-gated by GitLab plan support and might not materialize as a runnable job on every project.
-- Baseline policy notes for future repos live in [`docs/gitlab-ci-baseline-notes.md`](docs/gitlab-ci-baseline-notes.md).
-- New-repo setup guidance lives in [`docs/gitlab-new-repo-checklist.md`](docs/gitlab-new-repo-checklist.md), [`docs/gitlab-baseline-matrix.md`](docs/gitlab-baseline-matrix.md), and [`docs/how-to-adopt-this-gitlab-baseline.md`](docs/how-to-adopt-this-gitlab-baseline.md).
-- Performance checks stay in the dedicated perf workflows rather than the main correctness gate.
-
-Granular commands:
-
-- `npm run typecheck`
-- `npm run test:frontend`
-- `npm run build:frontend`
-- `npm run lint:rust`
-- `npm run test:rust`
-- `npm run perf:bundle`
-- `npm run perf:build`
-- `npm run perf:assets`
-- `npm run perf:memory`
-- `npm run perf:lhci`
-- `npm run perf:lhci:prod`
-
-### Commit helper
-
-`npm run commit` no longer uses an interactive third-party prompt. It now:
-
-- suggests a Conventional Commit message when you have staged changes, or
-- creates the commit directly when you pass a message, for example:
-
-```bash
-npm run commit -- "fix(repo): tighten lighthouse tooling"
-```
-
-### Lighthouse audits
-
-`npm run perf:lhci` and `npm run perf:lhci:prod` now use a repo-owned Lighthouse runner.
-It serves the built frontend with `vite preview`, runs the configured number of Lighthouse
-passes, writes results to `.perf-results/lighthouse.json`, and enforces the score thresholds
-defined in `lighthouserc.json` or `.lighthouserc.production.json`.
-
-### Performance profile policy
-
-- Baseline checks (`perf-foundation`) run on pull requests for continuous signal.
-- Enforced production budgets (`perf-enforced`) run when `PERF_PROFILE=production`.
-- Required gate policy: `fail` or `not-run` on required checks blocks done-state.
-- SEO remains informational for this desktop Tauri app, so Lighthouse SEO is tracked as a warning rather than a release blocker.
-
-### Linux note for Rust/Tauri checks
-
-Rust/Tauri checks require GTK/GLib development libraries (for example `glib-2.0`).
-If `cargo clippy` or `cargo test` fails with missing `glib-2.0.pc`, install the system
-packages used in CI (`libwebkit2gtk-4.1-dev`, `libappindicator3-dev`, `librsvg2-dev`, `patchelf`, `libgtk-3-dev`) before rerunning full verification.
-
-### Rust verification cache location
-
-`npm run tauri ...`, `npm run lint:rust`, and `npm run test:rust` default Cargo build output to
-`$HOME/.cache/lorekeeper/cargo-target` (override with `LOREKEEPER_CARGO_TARGET_DIR`).
-This avoids path-separator issues on some machines and keeps cleanup behavior deterministic.
-
-## Codex Local Environment Actions
-
-Configure these in Codex App `Settings > Local environments` and check the generated `.codex` config into the repo.
-
-Setup script:
-
-```bash
-npm install
-npm run build:frontend
-```
-
-Recommended actions:
-
-- `Run app`: `npm run tauri dev`
-- `Lean dev`: `npm run dev:lean`
-- `Verify frontend`: `npm run verify:frontend`
-- `Verify full`: `npm run verify:full`
-- `Verify canonical`: `bash .codex/scripts/run_verify_commands.sh`
-- `Cleanup heavy`: `npm run clean:heavy`
-- `Cleanup local`: `npm run clean:local`
-
-## Feature Maturity Policy
-
-- `Stable` features are default for production paths.
-- `Beta` and `Experimental` features require explicit owner, rollback plan, and fallback path.
-- Current repository default: multi-agent workflows are optional accelerators, not required gates.
-
-## Desktop Security Notes
-
-- The Tauri main window now uses a least-privilege capability file that grants event access without the broader `core:default` shell surface.
-- Module loading avoids exposing absolute filesystem paths to the frontend; the UI works with safe module IDs and the backend resolves them inside the app-owned `modules/` directory.
-- Module export follows the same rule: the editor gets back a safe module ID rather than a machine-specific path.
-- Ollama integration is local-only by design. Settings now accept `http://localhost` and loopback IPs only, which keeps narration traffic on the same machine.
-- Custom themes are validated on save and sanitized again before live CSS is applied, so malformed or unexpected theme payloads are ignored instead of mutating arbitrary styles.
-- Custom module ingestion now enforces file-size and structural guardrails before a module can be listed, validated, exported, or loaded into live game state.
-
-## Quality Snapshot
-
-This repository keeps quality status tied to runnable commands instead of hard-coded counts that drift over time.
-
-- Frontend health: `npm run verify:frontend`
-- Full app correctness gate: `npm run verify:full`
-- Canonical deterministic local gate runner: `bash .codex/scripts/run_verify_commands.sh`
-- Browser-level user flows: `npm run test:e2e`
-- Performance budgets and reports: `npm run perf:*` plus the dedicated perf GitHub Actions workflows
-
-For the current state of the branch, run the commands above instead of relying on a static stats block.
+| Layer | Technology |
+|-------|------------|
+| Desktop shell | Tauri 2 + Rust |
+| Game engine | Rust (world state, parser, crafting) |
+| Frontend | React + TypeScript + Vite |
+| AI narration | Ollama (local LLM, optional) |
+| Storage | SQLite (save slots, replay data) |
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────┐
-│              Tauri Shell                │
-│  ┌──────────────┐  ┌────────────────┐  │
-│  │   React UI   │  │  Rust Engine   │  │
-│  │  Terminal +  │◄─┤  Parser        │  │
-│  │  Sidebar +   │  │  Executor      │  │
-│  │  Map Editor  │  │  World State   │  │
-│  └──────┬───────┘  │  Combat/Quests │  │
-│         │          │  Crafting      │  │
-│         │          └───────┬────────┘  │
-│         │                  │           │
-│         │          ┌───────▼────────┐  │
-│         │          │   Narrator     │  │
-│         ◄──────────┤  Ollama / LLM  │  │
-│      events        │  or Templates  │  │
-│                    └────────────────┘  │
-└─────────────────────────────────────────┘
-```
+The game engine lives entirely in Rust: the world state machine, command parser, NPC memory graph, item system, and crafting rules are all managed as typed Rust structs with serializable state. Tauri exposes the engine via a typed command surface to the React frontend, which handles rendering the narrative output, the map panel, and the stats sidebar. Ollama dialogue is generated asynchronously and streamed into the NPC response — if the model is slow or unavailable, the template fallback fires immediately so the player is never blocked.
 
 ## License
 
