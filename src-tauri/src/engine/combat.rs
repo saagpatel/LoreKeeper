@@ -1,4 +1,4 @@
-use rand::Rng;
+use rand::RngExt;
 
 use crate::models::*;
 use crate::models::settings::Difficulty;
