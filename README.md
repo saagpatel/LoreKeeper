@@ -25,8 +25,7 @@ power. Will you claim it, destroy it, or strike a deal with its keeper?
 
 ### Prerequisites
 
-- Node.js 20+
-- pnpm 9+
+- Node.js 22 (22.12 or newer) and npm (CI uses Node 22); `package-lock.json` is canonical
 - Rust toolchain (stable) + Tauri v2 prerequisites for macOS
 - [Ollama](https://ollama.ai) with a pulled model (optional — enhances NPC dialogue)
 
@@ -35,21 +34,38 @@ power. Will you claim it, destroy it, or strike a deal with its keeper?
 ```bash
 git clone https://github.com/saagpatel/LoreKeeper.git
 cd LoreKeeper
-pnpm install
+npm ci --ignore-scripts
 cp .env.example .env
 ```
 
 ### Run (development)
 
 ```bash
-pnpm dev
+npm run dev:lean
 ```
 
 ### Build (desktop app)
 
 ```bash
-pnpm build
+npm run tauri -- build
 ```
+
+## Verification
+
+Run commands from the repository root. `npm ci --ignore-scripts` installs the locked dependencies without running Husky's shared Git hook setup. `npm run dev` starts the browser frontend; `npm run dev:lean` starts the Tauri desktop development loop with temporary build caches. Desktop use can write local SQLite saves and contact the configured local Ollama service; use disposable test data for walkthroughs.
+
+```bash
+# Focused frontend fixture tests (no desktop or Ollama required)
+npm run test:frontend -- src/lib/inputValidation.test.ts
+# Frontend typecheck, all frontend tests, and production frontend build
+npm run verify:frontend
+# Rust Clippy (-D warnings) and Rust tests; requires the Tauri platform toolchain
+npm run verify:full
+```
+
+There is no separate frontend lint/format script; `typecheck` and the commands above are defined in [package.json](package.json). Keep the [canonical local gate](.codex/verify.commands) and its runner `bash .codex/scripts/run_verify_commands.sh` for the required Git and performance checks. Focused tests do not replace that gate or required CI. Linux Rust verification needs the GTK/WebKit packages listed in [CI](.github/workflows/ci.yml); Rust wrappers default to `~/.cache/lorekeeper/cargo-target`, overridable with `CARGO_TARGET_DIR`.
+
+For changed UI or user flows, install the Playwright Chromium prerequisite with `npx playwright install chromium`, then run `npm run test:e2e` (or append a spec path). The harness starts a fresh loopback Vite server and uses mocked Tauri IPC; it does not prove the packaged desktop app or real model behavior. Follow [the internal macOS release guide](docs/internal-release-macos.md) for broader release verification and disposable-data desktop checks. Pure documentation edits do not require a browser walkthrough.
 
 ## Tech Stack
 
