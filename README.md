@@ -4,7 +4,7 @@
 
 > Every command becomes a story — a text adventure where Rust keeps the world honest and a local LLM makes it feel alive.
 
-LoreKeeper blends a traditional text adventure with a modern local-first stack. Rust manages world state with deterministic correctness, React and Tauri give it a real desktop feel, and an optional local LLM (via Ollama) turns your actions into living prose. If no model is available, the game runs on strong template narration — the experience never collapses into a broken demo.
+LoreKeeper blends a traditional text adventure with a modern local-first stack. Rust manages typed world state and randomized combat, React and Tauri give it a real desktop feel, and an optional local LLM (via Ollama) turns your actions into living prose. If no model is available, the game runs on strong template narration — the experience never collapses into a broken demo.
 
 ```
 You descend into the ruins of Thornhold, a fortress long abandoned
@@ -15,9 +15,9 @@ power. Will you claim it, destroy it, or strike a deal with its keeper?
 ## Features
 
 - **14 Handcrafted Locations + 5 Procedural Rooms** — A cohesive dark-fantasy world with secrets, hidden commands, and multiple endings
-- **LLM-Powered Dialogue** — 7 NPCs with persistent memory, relationships, and AI-generated responses when Ollama is available; graceful fallback to template narration when it isn't
+- **LLM-Powered Dialogue** — 7 handcrafted NPCs with persistent memory, relationships, and AI-generated responses when Ollama is available; graceful fallback to template narration when it isn't. The procedural dungeon adds 2 enemies
 - **Built-In Map Editor** — Design custom adventures and export playable modules without touching code
-- **Replay & Stats** — Full session replay, run statistics, and a history browser to review past playthroughs
+- **Replay & Stats** — Command-log replay of completed games, run statistics, and a history browser to review past playthroughs
 - **Theme Support** — Swap visual themes without restarting; custom color palettes for mood and accessibility
 - **25+ Items + Crafting** — Discoverable items, a crafting system, and hidden combination recipes
 
@@ -26,7 +26,7 @@ power. Will you claim it, destroy it, or strike a deal with its keeper?
 ### Prerequisites
 
 - Node.js 22 (22.12 or newer) and npm (CI uses Node 22); `package-lock.json` is canonical
-- Rust toolchain (stable) + Tauri v2 prerequisites for macOS
+- Rust 1.96.1 (pinned in `rust-toolchain.toml`) + Tauri v2 prerequisites for macOS
 - [Ollama](https://ollama.ai) with a pulled model (optional — enhances NPC dialogue)
 
 ### Installation
@@ -79,7 +79,7 @@ For changed UI or user flows, install the Playwright Chromium prerequisite with 
 
 ## Architecture
 
-The game engine lives entirely in Rust: the world state machine, command parser, NPC memory graph, item system, and crafting rules are all managed as typed Rust structs with serializable state. Tauri exposes the engine via a typed command surface to the React frontend, which handles rendering the narrative output, the map panel, and the stats sidebar. Ollama dialogue is generated asynchronously and streamed into the NPC response — if the model is slow or unavailable, the template fallback fires immediately so the player is never blocked.
+The game engine lives entirely in Rust: the world state machine, command parser, NPC memory records, item system, and crafting rules are all managed as typed Rust structs with serializable state. Tauri exposes the engine via a typed command surface to the React frontend, which handles rendering the narrative output, the map panel, and the stats sidebar. Template responses are returned with each command, while Ollama dialogue is generated asynchronously and streamed as additional output. Narration emits a fallback event on errors or timeouts; the HTTP client has a 30-second total request timeout (including the stream), and stream consumption is separately capped at 10 seconds.
 
 ## License
 
