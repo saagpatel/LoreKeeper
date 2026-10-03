@@ -1,17 +1,17 @@
 # LoreKeeper Internal Release Guide (macOS)
 
-This guide defines the current internal release contract for LoreKeeper after promotion to `master`.
+This guide defines the internal release contract for LoreKeeper on `main`, following the historical promotion to `master`.
 
 ## Release Scope
 
 - Platform: macOS only
 - Distribution posture: unsigned internal build
 - Signing/notarization: intentionally out of scope for this release
-- Default branch for promotion: `master`
-- Current internal release ref: `master @ dd1e8fb`
+- Default branch for promotion: `main`
+- Historical internal release ref: `master @ dd1e8fb`
 - Promotion source branch: `codex/fix/default-branch-risk-hardening`
 - Candidate baseline before release-prep work: `42eed42`
-- Fallback ref captured before release-prep promotion: `origin/master` at `990bae4`
+- Fallback commit captured before release-prep promotion: `990bae4` (then `origin/master`)
 
 Exact release commit SHA is recorded in the build manifest created by:
 
@@ -176,7 +176,7 @@ Treat these as release blockers:
 Rollback target for this internal release line:
 
 ```text
-origin/master @ 990bae4
+990bae4
 ```
 
 If the internal candidate is rejected, fall back to that ref and re-run the internal release verification set before distributing another artifact.
